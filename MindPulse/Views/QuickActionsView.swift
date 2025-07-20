@@ -10,6 +10,9 @@ import SwiftUI
 struct QuickActionsView: View {
     var actions: [QuickAction] = QuickAction.defaultActions
 
+    @State private var selectedAction: QuickAction?
+    @State private var isNavigationActive = false
+
     var body: some View {
         VStack(alignment: .leading) {
             Text("Quick Actions")
@@ -19,7 +22,10 @@ struct QuickActionsView: View {
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 16) {
                     ForEach(actions) { action in
-                        NavigationLink(destination: action.destinationView) {
+                        Button(action: {
+                            selectedAction = action
+                            isNavigationActive = true
+                        }) {
                             VStack(spacing: 8) {
                                 Image(systemName: action.icon)
                                     .font(.system(size: 24))
@@ -37,9 +43,19 @@ struct QuickActionsView: View {
                         }
                     }
                 }
+                .padding(.horizontal)
             }
+
+            // Hidden NavigationLink triggered by state
+            NavigationLink(
+                destination: selectedAction?.destinationView,
+                isActive: $isNavigationActive,
+                label: { EmptyView() }
+            )
+            .hidden()
         }
     }
 }
+
 
 

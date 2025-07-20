@@ -4,51 +4,56 @@
 //
 //  Created by Gaurav Kumar on 7/16/25.
 //
-
 import SwiftUI
 import WatchKit
 
 struct WatchBreathingView: View {
     @State private var isBreathing = false
     @State private var phase = "Inhale"
-    @State private var scale: CGFloat = 0.5
+    @State private var scale: CGFloat = 0.6
     @State private var timeRemaining = 60
     @State private var timer: Timer?
 
-    let totalTime = 60 // default breathing session duration in seconds
+    let totalTime = 60
 
     var body: some View {
-        VStack(spacing: 10) {
-            Text(phase)
-                .font(.headline)
-                .foregroundColor(.white)
-
-            Circle()
-                .fill(phase == "Inhale" ? Color.green : Color.blue)
-                .frame(width: 100 * scale, height: 100 * scale)
-                .animation(.easeInOut(duration: 3), value: scale)
-
-            Text("\(timeRemaining)s")
-                .font(.caption2)
-                .foregroundColor(.gray)
-
-            Button(action: {
-                isBreathing ? stopBreathing() : startBreathing()
-            }) {
-                Text(isBreathing ? "Stop" : "Start")
-                    .font(.footnote)
-                    .padding(8)
-                    .frame(width: 80)
-                    .background(isBreathing ? Color.red : Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(8)
+        VStack() {
+            ScrollView {
+                Text("Breathing")
+                    .font(.headline)
+                
+                ZStack {
+                    Circle()
+                        .fill(LinearGradient(gradient: Gradient(colors: [Color.green.opacity(0.6), Color.blue.opacity(0.6)]), startPoint: .top, endPoint: .bottom))
+                        .scaleEffect(scale)
+                        .frame(width: 90, height: 90)
+                        .animation(.easeInOut(duration: 3), value: scale)
+                    
+                    Text("\(timeRemaining)s")
+                        .font(.footnote)
+                        .foregroundColor(.white)
+                }
+                
+                Text(phase)
+                    .font(.subheadline)
+                    .foregroundColor(phase == "Inhale" ? .green : .blue)
+                
+                Button(action: {
+                    isBreathing ? stopBreathing() : startBreathing()
+                }) {
+                    Text(isBreathing ? "Stop" : "Start")
+                        .font(.footnote.bold())
+                        .padding(.horizontal, 40)
+                        .padding(.vertical, 6)
+                        .background(isBreathing ? Color.red : Color.green)
+                        .cornerRadius(8)
+                        .foregroundColor(.white)
+                }
             }
-        }
-        .padding()
-        .background(Color.black)
-        .cornerRadius(16)
-        .onDisappear {
-            stopBreathing()
+            .padding()
+            .onDisappear {
+                stopBreathing()
+            }
         }
     }
 
@@ -67,7 +72,6 @@ struct WatchBreathingView: View {
                 stopBreathing()
                 return
             }
-
             togglePhase()
         }
     }
@@ -77,14 +81,14 @@ struct WatchBreathingView: View {
         timer?.invalidate()
         timer = nil
         timeRemaining = totalTime
-        scale = 0.5
+        scale = 0.6
         phase = "Inhale"
     }
 
     func togglePhase() {
         if phase == "Inhale" {
             phase = "Exhale"
-            scale = 0.5
+            scale = 0.6
         } else {
             phase = "Inhale"
             scale = 1.0
@@ -93,7 +97,10 @@ struct WatchBreathingView: View {
     }
 
     func triggerHaptic() {
-        WKInterfaceDevice.current().play(.directionUp) // simple vibration
+        WKInterfaceDevice.current().play(.directionUp)
     }
 }
 
+#Preview {
+    WatchBreathingView()
+}

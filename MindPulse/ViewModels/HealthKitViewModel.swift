@@ -31,28 +31,35 @@ class HealthKitViewModel: ObservableObject {
     @Published var hrv: Double?
     @Published var sleepHours: Double?
     @Published var stressHistory: [DailyStress] = []
-    @Published var isAuthorized: Bool = false
+    //@Published var isAuthorized: Bool = false
     @Published var isDenied: Bool = false
     @Published var showHealthPermissionAlert: Bool = false
     @Published var showDeniedNotice: Bool = false
-   
+    @Published var bloodOxygen: Double?
+    @Published var respiratoryRate: Double?
 
     @Published var activeAlert: HealthAlertType? = nil
     @AppStorage("hasRequestedHealthKit") private var hasRequestedHealthKit: Bool = false
+    @AppStorage("isAuthorized") private var isAuthorized: Bool = false
     
     private let context = CoreDataManager.shared.container.viewContext
     
     func checkAuthorizationNeeded() {
-          if !hasRequestedHealthKit {
-              print(">>> Requesting HealthKit authorization")
-              activeAlert = .requestPermission
-          }
+        if isAuthorized {
+            loadData()
+        } else {
+            if !hasRequestedHealthKit {
+                print(">>> Requesting HealthKit authorization")
+                activeAlert = .requestPermission
+            }
+        }
       }
 
     func requestHealthAccess() {
         HealthKitManager.shared.requestAuthorization { [weak self] success in
             if success {
                 self?.loadData()
+                self?.isAuthorized = true
             }else {
                 self?.activeAlert = .accessDenied
             }
@@ -104,7 +111,8 @@ class HealthKitViewModel: ObservableObject {
         fetchHeartRate()
         fetchHRV()
         fetchSleep()
-       // simulateStressHistory()
+        fetchBloodOxygen()
+        fetchRespiratoryRate()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                self.calculateStressScore()
@@ -116,10 +124,30 @@ class HealthKitViewModel: ObservableObject {
         stressScore = StressScoreEngine.computeStressScore(
             hrv: self.hrv,
             restingHR: self.heartRate,
-            sleepHours: self.sleepHours
+            sleepHours: self.sleepHours,
+            respiratoryRate: self.respiratoryRate,
+            bloodOxygen: self.bloodOxygen
         )
         saveStressScoreIfNew()
         fetchStressHistory() // update chart
+    }
+    
+    private func fetchBloodOxygen() {
+        guard let type = HKQuantityType.quantityType(forIdentifier: .oxygenSaturation) else { return }
+        HealthKitManager.shared.fetchLatestSample(of: type) { (sample: HKQuantitySample?) in
+            DispatchQueue.main.async {
+                self.bloodOxygen = sample?.quantity.doubleValue(for: .percent())
+            }
+        }
+    }
+
+    private func fetchRespiratoryRate() {
+        guard let type = HKQuantityType.quantityType(forIdentifier: .respiratoryRate) else { return }
+        HealthKitManager.shared.fetchLatestSample(of: type) { (sample: HKQuantitySample?) in
+            DispatchQueue.main.async {
+                self.respiratoryRate = sample?.quantity.doubleValue(for: .count().unitDivided(by: .minute()))
+            }
+        }
     }
     
     func fetchStressHistory() {
@@ -134,10 +162,14 @@ class HealthKitViewModel: ObservableObject {
     }
 
     func startWatchConnectivityBridge() {
-        WatchSessionManager.shared.healthDataHandler = { [weak self] hr, hrv in
+        WatchSessionManager.shared.healthDataHandler = { [weak self] hr, hrv, streesScore, oxygen, respiratoryRate, sleepDuration in
             guard let self = self else { return }
             self.heartRate = hr
             self.hrv = hrv
+            self.stressScore = streesScore
+            self.bloodOxygen = oxygen
+            self.respiratoryRate = respiratoryRate
+            self.sleepHours = sleepDuration
             self.calculateStressScore()
         }
     }

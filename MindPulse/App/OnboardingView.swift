@@ -17,7 +17,7 @@ struct OnboardingView: View {
     @State private var currentPage = 0
 
     let pages: [OnboardingPage] = [
-        OnboardingPage(title: "Welcome to MindPulse", subtitle: "Track heart rate, HRV, and stress in real-time", imageName: "heart_icon"),
+        OnboardingPage(title: "Welcome to PulseMind", subtitle: "Track heart rate, HRV, and stress in real-time", imageName: "heart_icon"),
         OnboardingPage(title: "Sync with Apple Watch", subtitle: "Seamless integration for deeper insights", imageName: "watch_icon"),
         OnboardingPage(title: "Breathe & Reflect", subtitle: "Use guided breathing and mood check-ins", imageName: "breathe_icon")
     ]

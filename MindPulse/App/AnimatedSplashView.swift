@@ -28,20 +28,20 @@ struct AnimatedSplashView: View {
                 )
                 .edgesIgnoringSafeArea(.all)
                 VStack {
-                    Image("mindpulse")
+                    Image("pulsemind")
                         .resizable()
                         .frame(width: 120, height: 120)
                         .scaleEffect(1.2)
                         .animation(.easeIn(duration: 0.8), value: isActive)
 
-                    Text("MindPulse")
+                    Text("PulseMind")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .opacity(0.8)
                         .padding(.top, 10)
                 }
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color("SplashBackground")) // Optional custom color
+                //.background(Color("SplashBackground")) // Optional custom color
                 .edgesIgnoringSafeArea(.all)
                 .onAppear {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {

@@ -122,6 +122,14 @@ struct BreathingView: View {
                     selectedSound = sound
                 }
         }
+        .onDisappear(){
+        isBreathing = false
+          animateBreath = false
+          countdown = selectedDuration
+          elapsedTime = 0
+          isInhale = true
+          audioPlayer?.stop()
+        }
     }
         
 

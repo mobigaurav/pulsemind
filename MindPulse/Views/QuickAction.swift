@@ -18,9 +18,9 @@ struct QuickAction: Identifiable {
         [
             QuickAction(title: "Journal", icon: "book.closed", color: .indigo, destinationView: AnyView(JournalingView())),
            // QuickAction(title: "Mood", icon: "face.smiling", color: .pink, destinationView: AnyView(Breat())),
-           // QuickAction(title: "Trends", icon: "chart.line.uptrend.xyaxis", color: .orange, destinationView: AnyView(TrendsView(viewModel: <#T##HealthKitViewModel#>))),
+            //QuickAction(title: "Trends", icon: "chart.line.uptrend.xyaxis", color: .orange, destinationView: AnyView(TrendsView())),
             QuickAction(title: "Breath", icon: "wind", color: .teal, destinationView: AnyView(BreathingView())),
-            //QuickAction(title: "Timer", icon: "timer", color: .purple, destinationView: AnyView(FocusTimerView()))
+            QuickAction(title: "Timer", icon: "timer", color: .purple, destinationView: AnyView(FocusTimerView()))
         ]
     }
 }

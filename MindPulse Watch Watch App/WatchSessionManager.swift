@@ -24,11 +24,18 @@ class WatchSessionManager: NSObject, WCSessionDelegate, ObservableObject {
         session.activate()
     }
 
-    func sendHealthData(heartRate: Double, hrv: Double, streesScore:Int) {
+    func sendHealthData(heartRate: Double, hrv: Double, streesScore:Int,
+                        oxygen: Double,
+                        respiratoryRate: Double,
+                        sleepDuration: TimeInterval) {
+        
         let data: [String: Any] = [
             "heartRate": heartRate,
             "hrv": hrv,
-            "streesScore": streesScore
+            "streesScore": streesScore,
+            "oxygen": oxygen,
+            "respiratoryRate": respiratoryRate,
+            "sleepDuration": sleepDuration
         ]
 
         if WCSession.default.isReachable {

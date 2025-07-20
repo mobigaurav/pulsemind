@@ -17,22 +17,32 @@ struct MoodSummaryScrollView: View {
     let moods: [MoodEntry]
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 16) {
-                ForEach(moods) { mood in
-                    VStack {
-                        Text(mood.mood)
-                            .font(.largeTitle)
-                        Text(formattedDate(mood.date))
-                            .font(.caption)
-                            .foregroundColor(.gray)
+        VStack {
+            Text("Mood Summary")
+                //.alignment(.leading)
+                .font(.headline)
+                .padding()
+                .foregroundColor(.secondary)
+                .background(Color(.systemBackground))
+                .cornerRadius(12)
+            
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack() {
+                    ForEach(moods) { mood in
+                        VStack {
+                            Text(mood.mood)
+                                .font(.largeTitle)
+                            Text(formattedDate(mood.date))
+                                .font(.caption)
+                                .foregroundColor(.gray)
+                        }
+                        .padding()
+                        .background(Color(.secondarySystemBackground))
+                        .cornerRadius(12)
                     }
-                    .padding()
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(12)
                 }
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
         }
     }
 
@@ -41,6 +51,17 @@ struct MoodSummaryScrollView: View {
         formatter.dateStyle = .short
         return formatter.string(from: date)
     }
+}
+
+#Preview {
+    MoodSummaryScrollView(moods: [
+        .init(date: Date(), mood: "Happy"),
+        .init(date: Date(), mood: "Sad"),
+        .init(date: Date(), mood: "Angry"),
+        .init(date: Date(), mood: "Happy"),
+        .init(date: Date(), mood: "Sad"),
+        .init(date: Date(), mood: "Angry"),
+    ])
 }
 
 

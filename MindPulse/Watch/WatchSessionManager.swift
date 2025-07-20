@@ -11,7 +11,10 @@ class WatchSessionManager: NSObject, WCSessionDelegate, ObservableObject {
     //@ObservedObject var viewModel: HealthKitViewModel
     static let shared = WatchSessionManager()
     private override init() { super.init() }
-    var healthDataHandler: ((_ hr: Double, _ hrv: Double) -> Void)?
+    var healthDataHandler: ((_ hr: Double, _ hrv: Double, _ streesScore: Int,
+                             _ oxygen: Double, _ respiratoryRate:Double,
+                             _ sleepDuration:TimeInterval) -> Void)?
+    
     
     func activate() {
         guard WCSession.isSupported() else { return }
@@ -41,11 +44,17 @@ class WatchSessionManager: NSObject, WCSessionDelegate, ObservableObject {
         }
         
         if let hr = message["heartRate"] as? Double,
-                  let hrv = message["hrv"] as? Double {
+                  let hrv = message["hrv"] as? Double,
+                       let hrv = message["hrv"] as? Double,
+                       let streesScore = message["streesScore"] as? Int,
+                       let oxygen = message["oxygen"] as? Double,
+                       let respiratoryRate = message["respiratoryRate"] as? Double,
+                       let sleepDuration = message["sleepDuration"] as? Double{
+            
                    print("Received HR: \(hr), HRV: \(hrv) from watch")
 
                    // Forward to view model if registered
-                   self.healthDataHandler?(hr, hrv)
+                   self.healthDataHandler?(hr, hrv, streesScore, oxygen, respiratoryRate, sleepDuration)
                }
     }
 }

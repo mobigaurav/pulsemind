@@ -80,7 +80,7 @@ struct SettingsView: View {
 
                 
                 Section(header: Text("About")) {
-                    Text("MindPulse v1.0")
+                    Text("PulseMind v1.0")
                         .font(.subheadline)
                         .foregroundColor(.gray)
                     
@@ -159,7 +159,7 @@ struct SettingsView: View {
 
     func sendSupportEmail() {
         let email = "choti2792@gmail.com"
-        let subject = "MindPulse Support"
+        let subject = "PulseMind Support"
         let urlString = "mailto:\(email)?subject=\(subject)".addingPercentEncoding(withAllowedCharacters: .urlQueryAllowed)!
 
         if let url = URL(string: urlString) {
@@ -194,7 +194,7 @@ struct SettingsView: View {
                     let components = Calendar.current.dateComponents([.hour, .minute], from: reminderTime)
                     NotificationManager.shared.scheduleDailyReminder(
                         title: "Time to Journal 📝",
-                        body: "Reflect on your day with MindPulse",
+                        body: "Reflect on your day with PulseMind",
                         hour: components.hour ?? 20,
                         minute: components.minute ?? 0
                     )
