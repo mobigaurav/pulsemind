@@ -14,31 +14,21 @@ struct WatchDashboardView: View {
 
     var body: some View {
         NavigationStack {
-            ScrollView {
-                VStack(spacing: 12) {
-                    Text("PulseMind")
-                        .font(.title3.bold())
-                        .padding(.top)
-
+            List {
+                Section(header: Text("PulseMind").font(.headline)) {
                     dashboardCard(title: "Heart Rate", value: viewModel.heartRate, unit: "BPM")
                     dashboardCard(title: "HRV", value: viewModel.hrv, unit: "ms")
                     dashboardCard(title: "Blood Oxygen", value: viewModel.bloodOxygen, unit: "%")
-                    dashboardCard(title: "Respiratory Rate", value: viewModel.respiratoryRate, unit: "Breaths/minute")
+                    dashboardCard(title: "Respiratory Rate", value: viewModel.respiratoryRate, unit: "breaths/min")
                     dashboardCard(title: "Stress", value: viewModel.stressScore >= 0 ? Double(viewModel.stressScore) : nil, unit: "/100")
 
-                    NavigationLink(destination: WatchBreathingView()) {
-                        Text("🧘 Start Breathing")
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 6)
-                            .background(Color.blue)
-                            .foregroundColor(.white)
-                            .cornerRadius(10)
-                            .font(.footnote.bold())
+                    NavigationLink("🧘 Start Breathing") {
+                        WatchBreathingView()
                     }
-                    .padding(.top)
+                    .font(.footnote.bold())
                 }
-                .padding(.horizontal, 8)
             }
+            .listStyle(.carousel) // Ensures optimized behavior on watchOS
             .onAppear {
                 if !viewModel.isAuthorized {
                     viewModel.requestAuthorization()
@@ -50,21 +40,19 @@ struct WatchDashboardView: View {
     }
 
     private func dashboardCard(title: String, value: Double?, unit: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
+        VStack(alignment: .leading, spacing: 2) {
             Text(title)
-                .font(.caption)
+                .font(.caption2)
                 .foregroundColor(.secondary)
             Text(value != nil ? "\(Int(value!)) \(unit)" : "-- \(unit)")
-                .font(.headline)
+                .font(.body.weight(.medium))
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding()
-        .background(Color.gray.opacity(0.15))
-        .cornerRadius(10)
+        .padding(.vertical, 4)
     }
 }
 
+
 #Preview {
-    
+    WatchDashboardView(viewModel: .init())
 }
 
