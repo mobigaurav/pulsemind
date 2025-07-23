@@ -80,7 +80,7 @@ struct SettingsView: View {
 
                 
                 Section(header: Text("About")) {
-                    Text("PulseMind v1.0")
+                    Text("PulseMind v\(Bundle.main.appVersion) (\(Bundle.main.buildNumber))")
                         .font(.subheadline)
                         .foregroundColor(.gray)
                     

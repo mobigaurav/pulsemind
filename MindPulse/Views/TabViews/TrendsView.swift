@@ -16,71 +16,106 @@ struct TrendsView: View {
         ScrollView {
             VStack(alignment: .leading, spacing: 24) {
 
-                // Stress Trend
+                // MARK: - Stress Trend
                 VStack(alignment: .leading, spacing: 12) {
                     Text("Stress Trend (Last 7 Days)")
                         .font(.title2)
                         .bold()
-                    
-                    Chart(viewModel.stressHistory) { entry in
-                        LineMark(
-                            x: .value("Date", entry.date),
-                            y: .value("Stress Score", entry.score)
-                        )
-                        .symbol(Circle())
-                        .interpolationMethod(.catmullRom)
-                        .foregroundStyle(Color.orange)
+
+                    Chart {
+                        ForEach(viewModel.stressHistory) { entry in
+                            LineMark(
+                                x: .value("Date", entry.date),
+                                y: .value("Stress Score", entry.score)
+                            )
+                            .interpolationMethod(.catmullRom)
+                            .symbol(Circle())
+                            .foregroundStyle(Color.orange)
+                        }
                     }
                     .chartXAxis {
-                        AxisMarks(values: .automatic(desiredCount: 7)) { value in
+                        AxisMarks(values: viewModel.stressHistory.map { $0.date }) { value in
                             AxisGridLine()
                             AxisTick()
                             AxisValueLabel {
                                 if let dateValue = value.as(Date.self) {
-                                    Text(dateValue, format: .dateTime.weekday(.narrow))
+                                    Text(dateValue, format: .dateTime.weekday(.abbreviated))
                                         .font(.caption2)
-                                        .rotationEffect(.degrees(-30))
                                 }
                             }
                         }
                     }
                     .chartYAxis {
-                        AxisMarks(preset: .extended, position: .leading) // auto handle spacing
+                        AxisMarks()
                     }
-                    .chartYScale(domain: 0...100)
                     .frame(height: 260)
-                    .background(Color(.secondarySystemBackground))
-                    .cornerRadius(16)
-
                 }
 
-                // Mood Frequency
+                Spacer()
+                // MARK: - Mood Frequency (Bar Chart)
                 if !journalViewModel.entries.isEmpty {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Mood Frequency")
                             .font(.title2)
                             .bold()
 
-                        HStack(spacing: 16) {
+                        Chart {
                             ForEach(journalViewModel.moodFrequencySorted(), id: \.key) { mood, count in
-                                VStack {
-                                    Text(mood)
-                                        .font(.system(size: 36))
-                                    Text("\(count)")
-                                        .font(.caption)
-                                        .foregroundColor(.gray)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.accentColor.opacity(0.1))
-                                .cornerRadius(12)
+                                BarMark(
+                                    x: .value("Mood", mood),
+                                    y: .value("Count", count)
+                                )
+                                .foregroundStyle(Color.accentColor)
                             }
                         }
-                        .padding(.top, 8)
+                        .chartXAxis {
+                            AxisMarks(values: .automatic) { value in
+                                AxisGridLine()
+                                AxisTick()
+                                AxisValueLabel()
+                            }
+                        }
+                        .chartYAxis {
+                            AxisMarks()
+                        }
+                        .frame(height: 260)
+                        .background(Color(.secondarySystemBackground))
+                        .cornerRadius(16)
                     }
                 }
-
+                
                 Spacer()
+                
+//                VStack(alignment: .leading, spacing: 12) {
+//                    Text("Mood vs Stress")
+//                        .font(.title2)
+//                        .bold()
+//
+//                    Chart {
+//                        ForEach(viewModel.stressHistory) { entry in
+//                            LineMark(
+//                                x: .value("Date", entry.date),
+//                                y: .value("Stress Score", entry.score)
+//                            )
+////                            .foregroundStyle(.orange)
+////                            .symbol(Circle())
+//                        }
+//
+//                        ForEach(journalViewModel.moodTrendEntries()) { entry in
+//                            LineMark(
+//                                x: .value("Date", entry.date),
+//                                y: .value("Mood Score", entry.moodScore * 20) // Scale mood (1-5) to match stress range
+//                            )
+//                            //.foregroundStyle(.blue)
+//                        }
+//                    }
+////                    .chartYScale(domain: 0...100)
+////                    .frame(height: 260)
+////                    .background(Color(.secondarySystemBackground))
+////                    .cornerRadius(16)
+//                }
+
+
             }
             .padding()
         }
@@ -91,6 +126,11 @@ struct TrendsView: View {
         }
     }
 }
+
+#Preview {
+    TrendsView(viewModel: .init(), journalViewModel: .init())
+}
+
 
 
 

@@ -9,6 +9,7 @@ import SwiftUI
 struct DashboardView: View {
     @ObservedObject var viewModel: HealthKitViewModel
     @ObservedObject var journalViewModel: JournalingViewModel
+    @State private var showStressInfo = false
     
     var body: some View {
         NavigationView {
@@ -56,6 +57,33 @@ struct DashboardView: View {
                                 unit: "/100",
                                 color: .orange
                             )
+                            .onTapGesture {
+                                   showStressInfo = true
+                               }
+                            .sheet(isPresented: $showStressInfo) {
+                                VStack(spacing: 16) {
+                                    Text("How is Stress Score Calculated?")
+                                        .font(.headline)
+                                    
+                                    Text("""
+                                       Your stress score (out of 100) is calculated using:
+                                       - Heart Rate (BPM)
+                                       - Heart Rate Variability (HRV)
+                                       - Respiratory Rate
+                                       - Sleep Duration
+                                       
+                                       Higher HRV and longer sleep generally reduce your stress score, while elevated heart rate and respiratory rate can increase it.
+                                       """)
+                                    .font(.callout)
+                                    .padding()
+                                    
+                                    Button("Close") {
+                                        showStressInfo = false
+                                    }
+                                    .padding()
+                                }
+                                .padding()
+                            }
                         }
                        
                     }
