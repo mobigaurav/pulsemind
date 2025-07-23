@@ -89,11 +89,11 @@ struct SettingsView: View {
                     }
                     
                     Button("Terms of Service") {
-                        openLink("https://yourdomain.com/about")
+                        openLink("https://gaurav-portfolio-gaurav-kumars-projects-4cec24f5.vercel.app/policies/pulsemind/terms")
                     }
                     
                     Button("Privacy Policy") {
-                        openLink("https://yourdomain.com/privacy")
+                        openLink("https://gaurav-portfolio-gaurav-kumars-projects-4cec24f5.vercel.app/policies/pulsemind/privacy")
                     }
 
                     Button("Contact Support") {
