@@ -26,7 +26,6 @@ platform :ios do
 
   desc "Distribute to TestFlight"
   lane :beta do
-    increment_build_number
     build_app(
       scheme: "MindPulse"
     )
