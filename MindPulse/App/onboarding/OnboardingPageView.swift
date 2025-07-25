@@ -37,3 +37,7 @@ struct OnboardingPageView: View {
     }
 }
 
+#Preview {
+    OnboardingPageView(page: .init(title: "Title", subtitle: "Subtitle", imageName: "image"))
+}
+

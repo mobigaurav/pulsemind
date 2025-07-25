@@ -9,7 +9,7 @@ import SwiftUI
 import AVFoundation
 
 enum BreathingSound: String, CaseIterable, Identifiable {
-    case bird, forest, rain, wave, none
+    case bird, forest, rain, wave, om, flute, ney, piano, harmonica,  none
 
     var id: String { rawValue }
 
@@ -19,6 +19,11 @@ enum BreathingSound: String, CaseIterable, Identifiable {
         case .forest: return "Forest"
         case .rain: return "Rain"
         case .wave: return "Waves"
+        case .om: return "Om"
+        case .flute: return "Flute"
+        case .ney: return "Ney"
+        case .piano: return "Piano"
+        case .harmonica: return "Harmonica"
         case .none: return "None"
         }
     }

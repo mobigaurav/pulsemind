@@ -19,16 +19,16 @@ platform :ios do
   desc "Build and archive the app"
   lane :build do
     build_app(
-      scheme: "PulseMind", # Make sure this matches your actual scheme
+      scheme: "MindPulse", # Make sure this matches your actual scheme
       export_method: "app-store"
     )
   end
 
   desc "Distribute to TestFlight"
   lane :beta do
+    increment_build_number
     build_app(
-      scheme: "PulseMind",
-      export_method: "app-store"
+      scheme: "MindPulse"
     )
     upload_to_testflight
   end
@@ -37,7 +37,7 @@ platform :ios do
   lane :release do
     capture_screenshots               # Optional
     build_app(
-      scheme: "PulseMind",
+      scheme: "MindPulse",
       export_method: "app-store"
     )
     upload_to_app_store

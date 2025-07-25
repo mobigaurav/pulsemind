@@ -85,7 +85,7 @@ struct SettingsView: View {
                         .foregroundColor(.gray)
                     
                     Button("About Us") {
-                        openLink("https://yourdomain.com/about")
+                        openLink("https://gaurav-portfolio-gaurav-kumars-projects-4cec24f5.vercel.app/policies/pulsemind/terms")
                     }
                     
                     Button("Terms of Service") {

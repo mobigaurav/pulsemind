@@ -59,4 +59,6 @@ struct OnboardingView: View {
     }
 }
 
-
+#Preview {
+    OnboardingView(hasSeenOnboarding: false)
+}
