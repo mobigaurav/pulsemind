@@ -29,7 +29,7 @@ platform :ios do
     build_app(
       scheme: "MindPulse"
     )
-    upload_to_testflight
+    
   end
 
   desc "Deploy to the App Store"
