@@ -15,24 +15,10 @@ struct DashboardView: View {
         NavigationView {
             ScrollView {
                 VStack(alignment: .leading, spacing: 20) {
-
-
                     // Daily Affirmation
                     DailyAffirmationCardView()
-                      
-//                    // News Articles
-//                    ScrollView(.horizontal, showsIndicators: false) {
-//                        HStack(spacing: 16) {
-//                            ForEach(SampleArticles.articles) { article in
-//                                ArticleCardView(article: article)
-//                            }
-//                        }
-//                        .padding(.horizontal)
-//                    }
-
                     // Quick Actions
                     QuickActionsView()
-
                     // Health Metrics
                     Group {
                         HStack {
@@ -92,17 +78,6 @@ struct DashboardView: View {
                     if !journalViewModel.recentMoods.isEmpty {
                         MoodSummaryScrollView(moods: journalViewModel.recentMoods)
                     }
-                    
-//                    NavigationLink(destination: FocusTimerView()) {
-//                        FocusTimerCardView()
-//                    }
-//                    .buttonStyle(PlainButtonStyle())
-//
-//                    // Breathing session
-//                    NavigationLink(destination: BreathingView()) {
-//                        BreathingCardView()
-//                    }
-//                    .padding(.top, 10)
                 }
                 .padding()
             }
@@ -118,11 +93,10 @@ struct DashboardView: View {
             case .requestPermission:
                 return Alert(
                     title: Text("Health Access Needed"),
-                    message: Text("PulseMind would like to access your health data to provide stress and wellness insights."),
-                    primaryButton: .default(Text("Allow")) {
-                        viewModel.requestHealthAccess()
-                    },
-                    secondaryButton: .cancel(Text("Not Now"))
+                    message: Text("PulseMind uses Apple Health data (like HRV, sleep, and heart rate) to calculate your stress score. Your data stays private on your device."),
+                    dismissButton: .default(Text("Continue")) {
+                       viewModel.requestHealthAccess()
+                   }
                 )
             case .accessDenied:
                 return Alert(
