@@ -58,6 +58,10 @@ struct BreathingView: View {
                 Text("180 sec").tag(180)
             }
             .pickerStyle(SegmentedPickerStyle())
+            .onChange(of: selectedDuration) { newValue in
+                stopBreathing()
+                selectedDuration = newValue
+            }
             .padding(.horizontal)
 
             // Breathing Ring + Circle + Text
@@ -81,8 +85,8 @@ struct BreathingView: View {
 
                 Circle()
                     .fill(Color.blue.opacity(0.2))
-                    .frame(width: animateBreath ? 300 : 150, height: animateBreath ? 300 : 150)
-                    .scaleEffect(animateBreath ? 1.2 : 0.8)
+                    .frame(width: animateBreath ? 300 : 0, height: animateBreath ? 300 : 0)
+                    .scaleEffect(animateBreath ? 1.2 : 0)
                     .animation(.easeInOut(duration: 4).repeatForever(autoreverses: true), value: animateBreath)
 
                 Text(isInhale ? "Inhale" : "Exhale")
@@ -101,6 +105,17 @@ struct BreathingView: View {
 
             // Sound Toggle
             Toggle("Play Background Sound", isOn: $playSound)
+                .onChange(of: playSound) { newValue in
+                    if newValue {
+                        if let stored = UserDefaults.standard.string(forKey: "selectedBreathingSound"),
+                               let sound = BreathingSound(rawValue: stored) {
+                                selectedSound = sound
+                            }
+                        playBackgroundAudio()
+                    } else {
+                        audioPlayer?.stop()
+                    }
+                }
                 .padding(.horizontal)
 
             // Start/Stop Button
@@ -122,12 +137,14 @@ struct BreathingView: View {
         }
         .padding()
         .onAppear() {
+            UIApplication.shared.isIdleTimerDisabled = true
             if let stored = UserDefaults.standard.string(forKey: "selectedBreathingSound"),
                    let sound = BreathingSound(rawValue: stored) {
                     selectedSound = sound
                 }
         }
         .onDisappear(){
+            UIApplication.shared.isIdleTimerDisabled = false
         isBreathing = false
           animateBreath = false
           countdown = selectedDuration
@@ -162,7 +179,7 @@ struct BreathingView: View {
     }
 
     func stopBreathing() {
-        isBreathing = false
+          isBreathing = false
           animateBreath = false
           countdown = selectedDuration
           elapsedTime = 0
