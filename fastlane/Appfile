@@ -3,3 +3,10 @@ require "base64"
 app_identifier("com.playingview.mobigaurav.MindPulse")   # Replace with your real bundle ID
 apple_id("mobigaurav@gmail.com")           # Apple ID for App Store Connect
 team_id("C6E94YDVFW")                         # Team ID from Apple Developer account
+
+api_key({
+  key_id: ENV['APP_STORE_CONNECT_API_KEY_ID'],
+  issuer_id: ENV['APP_STORE_CONNECT_API_ISSUER_ID'],
+  key: Base64.decode64(ENV['APP_STORE_CONNECT_API_KEY']),
+  in_house: false
+})
