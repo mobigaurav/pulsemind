@@ -46,111 +46,119 @@ struct BreathingView: View {
     }
 
     var body: some View {
-        VStack(spacing: 24) {
-            Text("Breathing Session")
-                .font(.largeTitle)
-                .bold()
-
-            // Timer Selector
-            Picker("Duration", selection: $selectedDuration) {
-                Text("60 sec").tag(60)
-                Text("120 sec").tag(120)
-                Text("180 sec").tag(180)
-            }
-            .pickerStyle(SegmentedPickerStyle())
-            .onChange(of: selectedDuration) { newValue in
-                stopBreathing()
-                selectedDuration = newValue
-            }
-            .padding(.horizontal)
-
-            // Breathing Ring + Circle + Text
-            ZStack {
-                Circle()
-                    .stroke(lineWidth: 10)
-                    .opacity(0.2)
-                    .foregroundColor(.gray)
-
-                Circle()
-                    .trim(from: 0.0, to: CGFloat(min(progress, 1.0)))
-                    .stroke(
-                        AngularGradient(
-                            gradient: Gradient(colors: [.green, .blue]),
-                            center: .center
-                        ),
-                        style: StrokeStyle(lineWidth: 10, lineCap: .round)
-                    )
-                    .rotationEffect(.degrees(-90))
-                    .animation(.linear(duration: 1), value: progress)
-
-                Circle()
-                    .fill(Color.blue.opacity(0.2))
-                    .frame(width: animateBreath ? 300 : 0, height: animateBreath ? 300 : 0)
-                    .scaleEffect(animateBreath ? 1.2 : 0)
-                    .animation(.easeInOut(duration: 4).repeatForever(autoreverses: true), value: animateBreath)
-
-                Text(isInhale ? "Inhale" : "Exhale")
-                    .font(.title2)
+        ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [Color("AccentColor"), Color.white]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .edgesIgnoringSafeArea(.all)
+            VStack(spacing: 24) {
+                Text("Breathing Session")
+                    .font(.largeTitle)
                     .bold()
-                    .foregroundColor(.primary)
-            }
-            .frame(height: 365)
-
-            // Remaining Time
-            if isBreathing {
-                Text("Remaining: \(countdown) sec")
-                    .font(.headline)
-                    .foregroundColor(.gray)
-            }
-
-            // Sound Toggle
-            Toggle("Play Background Sound", isOn: $playSound)
-                .onChange(of: playSound) { newValue in
-                    if newValue {
-                        if let stored = UserDefaults.standard.string(forKey: "selectedBreathingSound"),
+                
+                // Timer Selector
+                Picker("Duration", selection: $selectedDuration) {
+                    Text("60 sec").tag(60)
+                    Text("120 sec").tag(120)
+                    Text("180 sec").tag(180)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .onChange(of: selectedDuration) { newValue in
+                    stopBreathing()
+                    selectedDuration = newValue
+                }
+                .padding(.horizontal)
+                
+                // Breathing Ring + Circle + Text
+                ZStack {
+                    Circle()
+                        .stroke(lineWidth: 10)
+                        .opacity(0.2)
+                        .foregroundColor(.gray)
+                    
+                    Circle()
+                        .trim(from: 0.0, to: CGFloat(min(progress, 1.0)))
+                        .stroke(
+                            AngularGradient(
+                                gradient: Gradient(colors: [.green, .blue]),
+                                center: .center
+                            ),
+                            style: StrokeStyle(lineWidth: 10, lineCap: .round)
+                        )
+                        .rotationEffect(.degrees(-90))
+                        .animation(.linear(duration: 1), value: progress)
+                    
+                    Circle()
+                        .fill(Color.blue.opacity(0.2))
+                        .frame(width: animateBreath ? 300 : 1.5, height: animateBreath ? 300 : 1.5)
+                        .scaleEffect(animateBreath ? 1.2 : 0.2)
+                        .animation(.easeInOut(duration: 4).repeatForever(autoreverses: true), value: animateBreath)
+                    
+                    Text(isInhale ? "Inhale" : "Exhale")
+                        .font(.title2)
+                        .bold()
+                        .foregroundColor(.primary)
+                }
+                .frame(height: 365)
+                
+                // Remaining Time
+                if isBreathing {
+                    Text("Remaining: \(countdown) sec")
+                        .font(.headline)
+                        .foregroundColor(.gray)
+                }
+                
+                // Sound Toggle
+                Toggle("Play Background Sound", isOn: $playSound)
+                    .onChange(of: playSound) { newValue in
+                        if newValue {
+                            if let stored = UserDefaults.standard.string(forKey: "selectedBreathingSound"),
                                let sound = BreathingSound(rawValue: stored) {
                                 selectedSound = sound
                             }
-                        playBackgroundAudio()
-                    } else {
-                        audioPlayer?.stop()
+                            playBackgroundAudio()
+                        } else {
+                            audioPlayer?.stop()
+                        }
                     }
+                    .padding(.horizontal)
+                
+                // Start/Stop Button
+                Button(action: {
+                    isBreathing.toggle()
+                    isBreathing ? startBreathing() : stopBreathing()
+                }) {
+                    Text(isBreathing ? "Stop" : "Start")
+                        .font(.headline)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(isBreathing ? Color.red : Color.green)
+                        .foregroundColor(.white)
+                        .cornerRadius(10)
+                        .scaleEffect(isBreathing ? 1.1 : 1.0)
+                        .animation(.spring(), value: isBreathing)
                 }
                 .padding(.horizontal)
-
-            // Start/Stop Button
-            Button(action: {
-                isBreathing.toggle()
-                isBreathing ? startBreathing() : stopBreathing()
-            }) {
-                Text(isBreathing ? "Stop" : "Start")
-                    .font(.headline)
-                    .padding()
-                    .frame(maxWidth: .infinity)
-                    .background(isBreathing ? Color.red : Color.green)
-                    .foregroundColor(.white)
-                    .cornerRadius(10)
-                    .scaleEffect(isBreathing ? 1.1 : 1.0)
-                    .animation(.spring(), value: isBreathing)
             }
-            .padding(.horizontal)
-        }
-        .padding()
-        .onAppear() {
-            UIApplication.shared.isIdleTimerDisabled = true
-            if let stored = UserDefaults.standard.string(forKey: "selectedBreathingSound"),
+            .padding()
+            .onAppear() {
+                UIApplication.shared.isIdleTimerDisabled = true
+                if let stored = UserDefaults.standard.string(forKey: "selectedBreathingSound"),
                    let sound = BreathingSound(rawValue: stored) {
                     selectedSound = sound
                 }
-        }
-        .onDisappear(){
-            UIApplication.shared.isIdleTimerDisabled = false
-        isBreathing = false
-          animateBreath = false
-          countdown = selectedDuration
-          elapsedTime = 0
-          isInhale = true
-          audioPlayer?.stop()
+            }
+            .onDisappear(){
+                UIApplication.shared.isIdleTimerDisabled = false
+                isBreathing = false
+                animateBreath = false
+                countdown = selectedDuration
+                elapsedTime = 0
+                isInhale = true
+                audioPlayer?.stop()
+            }
         }
     }
         

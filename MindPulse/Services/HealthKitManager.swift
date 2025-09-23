@@ -7,6 +7,33 @@
 
 import HealthKit
 
+extension HealthKitManager {
+    func fetchTodayStepCount(completion: @escaping (Double) -> Void) {
+        guard let type = HKQuantityType.quantityType(forIdentifier: .stepCount) else { return }
+        fetchSumForToday(of: type, unit: .count(), completion: completion)
+    }
+    
+    func fetchTodayActiveEnergy(completion: @escaping (Double) -> Void) {
+        guard let type = HKQuantityType.quantityType(forIdentifier: .activeEnergyBurned) else { return }
+        fetchSumForToday(of: type, unit: .kilocalorie(), completion: completion)
+    }
+    
+    private func fetchSumForToday(of type: HKQuantityType, unit: HKUnit, completion: @escaping (Double) -> Void) {
+        let calendar = Calendar.current
+        let startOfDay = calendar.startOfDay(for: Date())
+        let predicate = HKQuery.predicateForSamples(withStart: startOfDay, end: Date(), options: .strictStartDate)
+        
+        let query = HKStatisticsQuery(quantityType: type, quantitySamplePredicate: predicate, options: .cumulativeSum) { _, result, _ in
+            let value = result?.sumQuantity()?.doubleValue(for: unit) ?? 0
+            DispatchQueue.main.async {
+                completion(value)
+            }
+        }
+        healthStore.execute(query)
+    }
+}
+
+
 final class HealthKitManager {
     static let shared = HealthKitManager()
     private let healthStore = HKHealthStore()
@@ -18,7 +45,9 @@ final class HealthKitManager {
         HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN),
         HKObjectType.categoryType(forIdentifier: .sleepAnalysis),
         HKObjectType.quantityType(forIdentifier: .respiratoryRate),
-        HKObjectType.quantityType(forIdentifier: .oxygenSaturation)
+        HKObjectType.quantityType(forIdentifier: .oxygenSaturation),
+        HKObjectType.quantityType(forIdentifier: .stepCount),
+        HKObjectType.quantityType(forIdentifier: .activeEnergyBurned)
     ].compactMap { $0 })
 
     func requestAuthorization(completion: @escaping (Bool) -> Void) {

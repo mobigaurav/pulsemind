@@ -6,3 +6,11 @@
 //
 
 import Foundation
+
+enum LaunchDestination {
+    case onboarding
+    case welcome
+    case mainApp
+    case login
+    case signup
+}

@@ -1,0 +1,20 @@
+{
+  "dev": {
+    "awscloudformation": {
+      "AuthRoleName": "amplify-mindpulse-dev-5e414-authRole",
+      "UnauthRoleArn": "arn:aws:iam::362896113754:role/amplify-mindpulse-dev-5e414-unauthRole",
+      "AuthRoleArn": "arn:aws:iam::362896113754:role/amplify-mindpulse-dev-5e414-authRole",
+      "Region": "us-east-1",
+      "DeploymentBucketName": "amplify-mindpulse-dev-5e414-deployment",
+      "UnauthRoleName": "amplify-mindpulse-dev-5e414-unauthRole",
+      "StackName": "amplify-mindpulse-dev-5e414",
+      "StackId": "arn:aws:cloudformation:us-east-1:362896113754:stack/amplify-mindpulse-dev-5e414/a9d51570-88f3-11f0-b31e-1248431ff717",
+      "AmplifyAppId": "du4ji6pytlu7g"
+    },
+    "categories": {
+      "auth": {
+        "mindpulsefd05c46b": {}
+      }
+    }
+  }
+}

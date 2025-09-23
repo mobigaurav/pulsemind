@@ -37,7 +37,9 @@ class HealthKitViewModel: ObservableObject {
     @Published var showDeniedNotice: Bool = false
     @Published var bloodOxygen: Double?
     @Published var respiratoryRate: Double?
-
+    @Published var stepCount: Double?
+    @Published var activeCalories: Double?
+    
     @Published var activeAlert: HealthAlertType? = nil
     @AppStorage("hasRequestedHealthKit") private var hasRequestedHealthKit: Bool = false
     @AppStorage("isAuthorized") private var isAuthorized: Bool = false
@@ -113,11 +115,24 @@ class HealthKitViewModel: ObservableObject {
         fetchSleep()
         fetchBloodOxygen()
         fetchRespiratoryRate()
-        
+        fetchSteps()
+        fetchActiveCalories()
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
                self.calculateStressScore()
                self.fetchStressHistory()   // loads for trends view
            }
+    }
+    
+    private func fetchSteps() {
+        HealthKitManager.shared.fetchTodayStepCount { steps in
+            self.stepCount = steps
+        }
+    }
+
+    private func fetchActiveCalories() {
+        HealthKitManager.shared.fetchTodayActiveEnergy { calories in
+            self.activeCalories = calories
+        }
     }
     
     func calculateStressScore() {
@@ -140,6 +155,7 @@ class HealthKitViewModel: ObservableObject {
             }
         }
     }
+    
 
     private func fetchRespiratoryRate() {
         guard let type = HKQuantityType.quantityType(forIdentifier: .respiratoryRate) else { return }

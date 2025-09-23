@@ -13,39 +13,48 @@ struct FocusTimerView: View {
     @State private var timer: Timer? = nil
 
     var body: some View {
-        VStack(spacing: 30) {
-            Text("Focus Timer")
-                .font(.largeTitle)
-                .bold()
+        ZStack {
+            LinearGradient(
+                gradient: Gradient(colors: [Color("AccentColor"), Color.white]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .edgesIgnoringSafeArea(.all)
+            VStack(spacing: 30) {
+                Text("Focus Timer")
+                    .font(.largeTitle)
+                    .bold()
 
-            Text(timeFormatted(timeRemaining))
-                .font(.system(size: 60, weight: .medium, design: .monospaced))
-                .padding()
+                Text(timeFormatted(timeRemaining))
+                    .font(.system(size: 60, weight: .medium, design: .monospaced))
+                    .padding()
 
-            HStack(spacing: 20) {
-                Button(action: startTimer) {
-                    Label("Start", systemImage: "play.fill")
-                        .padding()
-                        .frame(width: 120)
-                        .background(Color.green)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
+                HStack(spacing: 20) {
+                    Button(action: startTimer) {
+                        Label("Start", systemImage: "play.fill")
+                            .padding()
+                            .frame(width: 120)
+                            .background(Color.green)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
 
-                Button(action: resetTimer) {
-                    Label("Reset", systemImage: "arrow.counterclockwise")
-                        .padding()
-                        .frame(width: 120)
-                        .background(Color.red)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
+                    Button(action: resetTimer) {
+                        Label("Reset", systemImage: "arrow.counterclockwise")
+                            .padding()
+                            .frame(width: 120)
+                            .background(Color.red)
+                            .foregroundColor(.white)
+                            .cornerRadius(10)
+                    }
                 }
             }
+            .padding()
+            .onDisappear {
+                timer?.invalidate()
+            }
         }
-        .padding()
-        .onDisappear {
-            timer?.invalidate()
-        }
+       
     }
 
     private func startTimer() {

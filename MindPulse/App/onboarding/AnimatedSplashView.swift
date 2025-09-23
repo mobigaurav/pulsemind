@@ -10,15 +10,32 @@ struct AnimatedSplashView: View {
     @State private var isActive = false
     @AppStorage("hasSeenOnboarding") var hasSeenOnboarding = false
     @StateObject private var viewModel = HealthKitViewModel()
+    @StateObject var appState = AppStateViewModel()
+    @StateObject var authViewModel = AuthViewModel()
     
     var body: some View {
         if isActive {
-            // Navigate to onboarding or dashboard
-            if hasSeenOnboarding {
-                MainTabView()
-                } else {
-                OnboardingView()
+         Group {
+            switch appState.destination {
+                case .onboarding:
+                    OnboardingView()
+                     .environmentObject(appState)
+                case .welcome:
+                    WelcomeView()
+                        .environmentObject(appState)
+                        .environmentObject(authViewModel)
+                case .login:
+                    LoginView()
+                        .environmentObject(authViewModel)
+                        .environmentObject(appState)
+                case .signup:
+                    SignupView()
+                        .environmentObject(authViewModel)
+                case .mainApp:
+                    MainTabView()
                 }
+            }
+         .environmentObject(appState)
         } else {
             ZStack {
                 LinearGradient(

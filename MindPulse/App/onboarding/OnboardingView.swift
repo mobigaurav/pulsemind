@@ -13,6 +13,7 @@ struct OnboardingPage {
 }
 
 struct OnboardingView: View {
+    @EnvironmentObject var appState: AppStateViewModel
     @AppStorage("hasSeenOnboarding") var hasSeenOnboarding: Bool = false
     @State private var currentPage = 0
 
@@ -43,6 +44,7 @@ struct OnboardingView: View {
 
                 Button(action: {
                     hasSeenOnboarding = true
+                    appState.destination = .mainApp
                 }) {
                     Text(currentPage == pages.count - 1 ? "Get Started" : "Skip")
                         .fontWeight(.semibold)
