@@ -11,11 +11,21 @@ platform :ios do
     }
   end
 
+  def appstore_api_key
+    {
+      key_id: ENV['APP_STORE_CONNECT_API_KEY_ID'],
+      issuer_id: ENV['APP_STORE_CONNECT_API_ISSUER_ID'],
+      key: ENV['APP_STORE_CONNECT_API_KEY'],
+      in_house: false
+    }
+  end
+
   desc "Build and archive the app"
   lane :build do
     match(
       type: "appstore",
-      app_identifier: [MAIN_APP_ID, WATCH_APP_ID]
+      app_identifier: [MAIN_APP_ID, WATCH_APP_ID],
+      api_key: appstore_api_key
     )
 
     increment_build_number(xcodeproj: "MindPulse.xcodeproj")
@@ -34,7 +44,8 @@ platform :ios do
   lane :beta do
     match(
       type: "appstore",
-      app_identifier: [MAIN_APP_ID, WATCH_APP_ID]
+      app_identifier: [MAIN_APP_ID, WATCH_APP_ID],
+      api_key: appstore_api_key
     )
 
     increment_build_number(xcodeproj: "MindPulse.xcodeproj")
@@ -49,6 +60,7 @@ platform :ios do
     )
 
     upload_to_testflight(
+      api_key: appstore_api_key,
       skip_waiting_for_build_processing: true,
       notify_external_testers: false,
       changelog: "Automated CI/CD build 🚀"
@@ -64,7 +76,8 @@ platform :ios do
 
     match(
       type: "appstore",
-      app_identifier: [MAIN_APP_ID, WATCH_APP_ID]
+      app_identifier: [MAIN_APP_ID, WATCH_APP_ID],
+      api_key: appstore_api_key
     )
 
     increment_build_number(xcodeproj: "MindPulse.xcodeproj")
@@ -79,6 +92,7 @@ platform :ios do
     )
 
     upload_to_app_store(
+      api_key: appstore_api_key,
       skip_metadata: true,
       skip_screenshots: true,
       submit_for_review: false

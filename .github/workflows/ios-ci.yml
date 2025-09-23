@@ -26,7 +26,7 @@ jobs:
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
-          xcode-version: '16.4.0'
+          xcode-version: '16.4.0'   # closest stable version available on GitHub runners
 
       - name: List Installed Provisioning Profiles
         run: ls ~/Library/MobileDevice/Provisioning\ Profiles || true
@@ -40,6 +40,7 @@ jobs:
         run: bundle exec fastlane beta
 
       - name: Send Email Notification
+        if: success()
         uses: dawidd6/action-send-mail@v3
         with:
           server_address: smtp.gmail.com
