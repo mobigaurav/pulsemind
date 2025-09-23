@@ -1,45 +1,99 @@
-# This file contains the fastlane.tools configuration
-# You can find the documentation at https://docs.fastlane.tools
-#
-# For a list of all available actions, check out
-#
-#     https://docs.fastlane.tools/actions
-#
-# For a list of all available plugins, check out
-#
-#     https://docs.fastlane.tools/plugins/available-plugins
-#
-
-# Uncomment the line if you want fastlane to automatically update itself
-# update_fastlane
-
 default_platform(:ios)
 
 platform :ios do
+  MAIN_APP_ID   = "com.playingview.mobigaurav.MindPulse"
+  WATCH_APP_ID  = "com.playingview.mobigaurav.MindPulse.watchkitapp"
+
+  def provisioning_profiles
+    {
+      MAIN_APP_ID  => "match AppStore #{MAIN_APP_ID}",
+      WATCH_APP_ID => "match AppStore #{WATCH_APP_ID}"
+    }
+  end
+
   desc "Build and archive the app"
   lane :build do
+    match(
+      type: "appstore",
+      app_identifier: [MAIN_APP_ID, WATCH_APP_ID]
+    )
+
+    increment_build_number(xcodeproj: "MindPulse.xcodeproj")
+
     build_app(
-      scheme: "MindPulse", # Make sure this matches your actual scheme
-      export_method: "app-store"
+      scheme: "MindPulse",
+      export_method: "app-store",
+      clean: true,
+      export_options: {
+        provisioningProfiles: provisioning_profiles
+      }
     )
   end
 
   desc "Distribute to TestFlight"
   lane :beta do
-    build_app(
-      scheme: "MindPulse"
+    match(
+      type: "appstore",
+      app_identifier: [MAIN_APP_ID, WATCH_APP_ID]
     )
-    
+
+    increment_build_number(xcodeproj: "MindPulse.xcodeproj")
+
+    build_app(
+      scheme: "MindPulse",
+      export_method: "app-store",
+      clean: true,
+      export_options: {
+        provisioningProfiles: provisioning_profiles
+      }
+    )
+
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      notify_external_testers: false,
+      changelog: "Automated CI/CD build 🚀"
+    )
+
+    create_git_tag
+    push_git_tags
   end
 
   desc "Deploy to the App Store"
   lane :release do
-    capture_screenshots               # Optional
+    capture_screenshots # optional
+
+    match(
+      type: "appstore",
+      app_identifier: [MAIN_APP_ID, WATCH_APP_ID]
+    )
+
+    increment_build_number(xcodeproj: "MindPulse.xcodeproj")
+
     build_app(
       scheme: "MindPulse",
-      export_method: "app-store"
+      export_method: "app-store",
+      clean: true,
+      export_options: {
+        provisioningProfiles: provisioning_profiles
+      }
     )
-    upload_to_app_store
+
+    upload_to_app_store(
+      skip_metadata: true,
+      skip_screenshots: true,
+      submit_for_review: false
+    )
+
+    create_git_tag
+    push_git_tags
   end
 end
 
+# Helper lane for git tagging
+lane :create_git_tag do
+  version = get_version_number(xcodeproj: "MindPulse.xcodeproj")
+  build = get_build_number(xcodeproj: "MindPulse.xcodeproj")
+  tag = "v#{version}.#{build}"
+
+  sh("git tag #{tag}")
+end

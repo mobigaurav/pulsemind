@@ -13,6 +13,17 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 # Available Actions
 
+### add_git_tag
+
+```sh
+[bundle exec] fastlane add_git_tag
+```
+
+
+
+----
+
+
 ## iOS
 
 ### ios build
