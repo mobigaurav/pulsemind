@@ -37,6 +37,7 @@ jobs:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY: ${{ secrets.APP_STORE_CONNECT_API_KEY }}
+          CERTS_REPO_PAT: ${{ secrets.CERTS_REPO_PAT }}
         run: bundle exec fastlane beta
 
       - name: Send Email Notification
