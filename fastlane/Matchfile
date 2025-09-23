@@ -1,4 +1,4 @@
-git_url("https://mobigaurav:${ENV['CERTS_REPO_PAT']}@github.com/mobigaurav/pulse-certificates.git")
+git_url("https://mobigaurav:#{ENV['CERTS_REPO_PAT']}@github.com/mobigaurav/pulse-certificates.git")
 
 storage_mode("git")
 type("appstore") # for TestFlight + App Store builds
