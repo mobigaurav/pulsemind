@@ -31,6 +31,25 @@ extension HealthKitManager {
         }
         healthStore.execute(query)
     }
+    
+    func observeSample(type: HKSampleType, updateHandler: @escaping () -> Void) {
+        let query = HKObserverQuery(sampleType: type, predicate: nil) { _, _, error in
+            if error != nil {
+                print("Observer error: \(error!.localizedDescription)")
+                return
+            }
+            DispatchQueue.main.async {
+                updateHandler()
+            }
+        }
+        healthStore.execute(query)
+        healthStore.enableBackgroundDelivery(for: type, frequency: .immediate) { success, error in
+            if !success {
+                print("Failed enabling background delivery: \(String(describing: error))")
+            }
+        }
+    }
+
 }
 
 

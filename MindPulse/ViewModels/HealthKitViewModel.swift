@@ -56,12 +56,62 @@ class HealthKitViewModel: ObservableObject {
             }
         }
       }
+    
+    func setupObservers() {
+        // Steps
+        if let stepsType = HKObjectType.quantityType(forIdentifier: .stepCount) {
+            HealthKitManager.shared.observeSample(type: stepsType) {
+                HealthKitManager.shared.fetchTodayStepCount { steps in
+                    self.stepCount = steps
+                }
+            }
+        }
+
+        // Active energy
+        if let kcalType = HKObjectType.quantityType(forIdentifier: .activeEnergyBurned) {
+            HealthKitManager.shared.observeSample(type: kcalType) {
+                HealthKitManager.shared.fetchTodayActiveEnergy { kcal in
+                    self.activeCalories = kcal
+                }
+            }
+        }
+
+        // Heart rate
+        if let hrType = HKObjectType.quantityType(forIdentifier: .heartRate) {
+            HealthKitManager.shared.observeSample(type: hrType) {
+                self.fetchHeartRate()
+            }
+        }
+
+        // HRV
+        if let hrvType = HKObjectType.quantityType(forIdentifier: .heartRateVariabilitySDNN) {
+            HealthKitManager.shared.observeSample(type: hrvType) {
+                self.fetchHRV()
+            }
+        }
+
+        // Blood oxygen
+        if let oxygenType = HKObjectType.quantityType(forIdentifier: .oxygenSaturation) {
+            HealthKitManager.shared.observeSample(type: oxygenType) {
+                self.fetchBloodOxygen()
+            }
+        }
+
+        // Respiratory rate
+        if let respType = HKObjectType.quantityType(forIdentifier: .respiratoryRate) {
+            HealthKitManager.shared.observeSample(type: respType) {
+                self.fetchRespiratoryRate()
+            }
+        }
+    }
+
 
     func requestHealthAccess() {
         HealthKitManager.shared.requestAuthorization { [weak self] success in
             if success {
                 self?.loadData()
                 self?.isAuthorized = true
+                self?.setupObservers()
             }else {
                 self?.activeAlert = .accessDenied
             }

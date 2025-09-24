@@ -31,6 +31,17 @@ jobs:
       - name: List Installed Provisioning Profiles
         run: ls ~/Library/MobileDevice/Provisioning\ Profiles || true
 
+      - name: Cache Swift Packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData
+            ~/Library/Caches/org.swift.swiftpm
+            .build
+          key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+          restore-keys: |
+            ${{ runner.os }}-spm-
+
       - name: Build and Distribute with Fastlane
         env:
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
